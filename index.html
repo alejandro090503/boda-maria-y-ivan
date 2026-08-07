@@ -464,6 +464,35 @@ h1 em,h2 em,h3 em{font-style:italic;font-weight:600;color:var(--gold)}
 /* En móvil, 3 + 3 en vez de 5 + 1 suelto */
 @media(max-width:560px){.dc-avoid-list{max-width:290px;gap:20px 22px}}
 
+/* ============ GALERÍA — RUEDA 3D ============ */
+.galeria{text-align:center;overflow:visible}
+.galeria h2{font-size:clamp(32px,4.8vw,54px);margin-bottom:6px}
+.gal-header-ornament{width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:18px auto 0}
+.wheel-scene{
+  position:relative;width:100%;height:520px;margin:40px auto 0;
+  perspective:1400px;transform-style:preserve-3d;overflow:visible;
+}
+.wheel-ring{position:absolute;width:100%;height:100%;transform-style:preserve-3d;cursor:grab}
+.wheel-ring.dragging{cursor:grabbing}
+.wheel-card{
+  position:absolute;width:200px;height:280px;left:50%;top:50%;
+  margin-left:-100px;margin-top:-140px;
+  border-radius:18px;overflow:hidden;
+  border:2px solid rgba(196,160,224,.42);
+  box-shadow:0 12px 40px rgba(107,77,138,.24);
+  user-select:none;-webkit-user-select:none;
+}
+.wheel-card img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;pointer-events:none}
+.gal-hint{
+  font-family:var(--serif);font-style:italic;font-size:16px;font-weight:600;
+  letter-spacing:.18em;color:var(--accent-deep);margin-top:24px;opacity:.85;
+}
+@media(max-width:430px){
+  .wheel-scene{height:340px;margin-top:30px}
+  .wheel-card{width:168px;height:235px;margin-left:-84px;margin-top:-117px}
+  .gal-hint{margin-top:14px}
+}
+
 /* ============ COUNTDOWN ============ */
 .countdown{text-align:center;padding:min(14vh,120px) 0;position:relative;overflow:hidden;}
 .countdown::before{content:"";position:absolute;inset:-2px;background:url('./bg-mist.jpeg') center/cover no-repeat;opacity:.50;pointer-events:none;z-index:0;
@@ -1113,6 +1142,29 @@ footer{background:linear-gradient(160deg,#e7c9ff 0%,#bdd3ff 35%,#ccebff 65%,#ffd
       </div>
     </div>
   </section>
+
+  <div class="seam" style="--from:var(--bg);--to:var(--paper)" aria-hidden="true"></div>
+
+  <!-- GALERÍA — RUEDA 3D -->
+  <section class="section-paper galeria" id="galeria" aria-label="Galería de fotos">
+    <div class="container">
+      <div class="eyebrow">Nuestros recuerdos</div>
+      <h2>Momentos <em>juntos</em></h2>
+      <div class="gal-header-ornament" aria-hidden="true"></div>
+      <div class="wheel-scene" id="wheel-scene">
+        <div class="wheel-ring" id="wheel-ring">
+          <div class="wheel-card"><img src="./foto1.jpg" alt="María y Orlando" loading="lazy"></div>
+          <div class="wheel-card"><img src="./foto2.jpg" alt="María y Orlando" loading="lazy"></div>
+          <div class="wheel-card"><img src="./foto3.jpg" alt="María y Orlando" loading="lazy"></div>
+          <div class="wheel-card"><img src="./foto4.jpg" alt="María y Orlando" loading="lazy"></div>
+          <div class="wheel-card"><img src="./foto5.jpg" alt="María y Orlando" loading="lazy"></div>
+        </div>
+      </div>
+      <p class="gal-hint">Arrastra para girar</p>
+    </div>
+  </section>
+
+  <div class="seam" style="--from:var(--paper);--to:var(--surface)" aria-hidden="true"></div>
 
   <!-- ITINERARIO -->
   <section id="siti" style="padding:min(10vh,90px) 0 min(12vh,110px)">
@@ -1959,6 +2011,68 @@ gsap.fromTo('.kids-card',{opacity:0,y:40,scale:.97},{opacity:1,y:0,scale:1,durat
 
 // ------ GIFTS ------
 gsap.fromTo('.gifts-head > *',{opacity:0,y:18},{opacity:1,y:0,duration:1,stagger:.1,scrollTrigger:{trigger:'.gifts-head',start:'top 80%'}});
+/* ------ GALERÍA: rueda 3D con arrastre e inercia ------ */
+(function(){
+  var ring=document.getElementById('wheel-ring');
+  if(!ring)return;
+  var cards=ring.querySelectorAll('.wheel-card');
+  var n=cards.length;
+  if(!n)return;
+  var rot=0,vel=0,isDrag=false,startX=0,startRot=0,lastX=0,rafId=null,radius=0;
+
+  function layout(){
+    // Radio derivado del ancho real de la tarjeta: con 5 fotos el mínimo
+    // para que no se encimen es (w/2)/tan(180/n); dejamos ~20% de aire.
+    var w=cards[0].getBoundingClientRect().width||200;
+    radius=Math.round((w/2)/Math.tan(Math.PI/n)*1.22);
+    cards.forEach(function(card,i){
+      card.style.transform='rotateY('+(360/n*i)+'deg) translateZ('+radius+'px)';
+    });
+  }
+  function setRot(){gsap.set(ring,{rotateY:rot});}
+  layout();setRot();
+  window.addEventListener('resize',layout);
+
+  function inertia(){
+    if(isDrag)return;
+    rot+=vel;vel*=0.94;setRot();
+    if(Math.abs(vel)>0.05)rafId=requestAnimationFrame(inertia);
+  }
+  function pointerDown(x){
+    isDrag=true;ring.classList.add('dragging');
+    startX=x;lastX=x;startRot=rot;vel=0;
+    if(rafId)cancelAnimationFrame(rafId);
+  }
+  function pointerMove(x){
+    if(!isDrag)return;
+    rot=startRot+(x-startX)*0.45;
+    vel=(x-lastX)*0.5;lastX=x;setRot();
+  }
+  function pointerUp(){
+    if(!isDrag)return;
+    isDrag=false;ring.classList.remove('dragging');
+    rafId=requestAnimationFrame(inertia);
+  }
+  ring.addEventListener('mousedown',function(e){e.preventDefault();pointerDown(e.clientX);});
+  window.addEventListener('mousemove',function(e){pointerMove(e.clientX);});
+  window.addEventListener('mouseup',pointerUp);
+  ring.addEventListener('touchstart',function(e){pointerDown(e.touches[0].clientX);},{passive:true});
+  ring.addEventListener('touchmove',function(e){pointerMove(e.touches[0].clientX);},{passive:true});
+  ring.addEventListener('touchend',pointerUp);
+
+  /* giro lento automático hasta el primer arrastre */
+  var auto=true;
+  (function spin(){
+    if(auto&&!isDrag){rot+=0.12;setRot();}
+    requestAnimationFrame(spin);
+  })();
+  ring.addEventListener('mousedown',function(){auto=false;});
+  ring.addEventListener('touchstart',function(){auto=false;});
+
+  gsap.fromTo('.wheel-scene',{opacity:0,y:36},{opacity:1,y:0,duration:1.1,ease:'power3.out',scrollTrigger:{trigger:'#galeria',start:'top 82%',once:true}});
+  gsap.fromTo('.gal-hint',{opacity:0},{opacity:.85,duration:.9,delay:.35,scrollTrigger:{trigger:'#galeria',start:'top 82%',once:true}});
+})();
+
 /* ------ HOSPEDAJE: carrusel con swipe, flechas y dots ------ */
 (function(){
   var track=document.getElementById('hospTrack');
