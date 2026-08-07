@@ -469,28 +469,34 @@ h1 em,h2 em,h3 em{font-style:italic;font-weight:600;color:var(--gold)}
 .galeria h2{font-size:clamp(32px,4.8vw,54px);margin-bottom:6px}
 .gal-header-ornament{width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:18px auto 0}
 .wheel-scene{
-  position:relative;width:100%;height:520px;margin:40px auto 0;
-  perspective:1400px;transform-style:preserve-3d;overflow:visible;
+  position:relative;width:100%;height:600px;margin:44px auto 0;
+  perspective:1500px;transform-style:preserve-3d;overflow:visible;
 }
 .wheel-ring{position:absolute;width:100%;height:100%;transform-style:preserve-3d;cursor:grab}
 .wheel-ring.dragging{cursor:grabbing}
 .wheel-card{
-  position:absolute;width:200px;height:280px;left:50%;top:50%;
-  margin-left:-100px;margin-top:-140px;
-  border-radius:18px;overflow:hidden;
-  border:2px solid rgba(196,160,224,.42);
-  box-shadow:0 12px 40px rgba(107,77,138,.24);
+  position:absolute;width:330px;height:462px;left:50%;top:50%;
+  margin-left:-165px;margin-top:-231px;
+  border-radius:16px;overflow:hidden;
+  border:3px solid rgba(255,255,255,.85);
+  outline:1px solid rgba(201,160,68,.35);outline-offset:-5px;
+  box-shadow:0 18px 54px rgba(107,77,138,.30);
   user-select:none;-webkit-user-select:none;
+  will-change:opacity,filter;
 }
 .wheel-card img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;pointer-events:none}
 .gal-hint{
   font-family:var(--serif);font-style:italic;font-size:16px;font-weight:600;
-  letter-spacing:.18em;color:var(--accent-deep);margin-top:24px;opacity:.85;
+  letter-spacing:.18em;color:var(--accent-deep);margin-top:26px;opacity:.85;
 }
-@media(max-width:430px){
-  .wheel-scene{height:340px;margin-top:30px}
-  .wheel-card{width:168px;height:235px;margin-left:-84px;margin-top:-117px}
-  .gal-hint{margin-top:14px}
+@media(max-width:620px){
+  .wheel-scene{height:520px;margin-top:34px}
+  .wheel-card{width:290px;height:406px;margin-left:-145px;margin-top:-203px}
+}
+@media(max-width:400px){
+  .wheel-scene{height:480px}
+  .wheel-card{width:264px;height:370px;margin-left:-132px;margin-top:-185px}
+  .gal-hint{margin-top:18px;font-size:15px}
 }
 
 /* ============ COUNTDOWN ============ */
@@ -2019,29 +2025,55 @@ gsap.fromTo('.gifts-head > *',{opacity:0,y:18},{opacity:1,y:0,duration:1,stagger
   var n=cards.length;
   if(!n)return;
   var rot=0,vel=0,isDrag=false,startX=0,startRot=0,lastX=0,rafId=null,radius=0;
+  var o={r:0},timer=null;
 
   function layout(){
-    // Radio derivado del ancho real de la tarjeta: con 5 fotos el mínimo
-    // para que no se encimen es (w/2)/tan(180/n); dejamos ~20% de aire.
-    var w=cards[0].getBoundingClientRect().width||200;
-    radius=Math.round((w/2)/Math.tan(Math.PI/n)*1.22);
+    // Radio derivado del ancho real de la tarjeta. El mínimo para que no se
+    // toquen es (w/2)/tan(180/n); con 1.9 quedan bien separadas y el anillo
+    // se lee como un carrusel en arco, no como un cubo.
+    // offsetWidth, no getBoundingClientRect: al estar rotadas en 3D el rect
+    // devuelve el ancho escorzado y el radio saldría mal en cada resize.
+    var w=cards[0].offsetWidth||330;
+    radius=Math.round((w/2)/Math.tan(Math.PI/n)*1.9);
     cards.forEach(function(card,i){
       card.style.transform='rotateY('+(360/n*i)+'deg) translateZ('+radius+'px)';
     });
   }
-  function setRot(){gsap.set(ring,{rotateY:rot});}
+  // Profundidad: la del frente nítida, las de atrás se apagan y desenfocan
+  function depth(){
+    for(var i=0;i<n;i++){
+      var a=((rot+360/n*i)%360+360)%360;          // 0 = mirando al frente
+      var d=Math.abs(a>180?360-a:a)/180;          // 0 al frente, 1 atrás
+      var c=cards[i];
+      c.style.opacity   = (1-d*0.72).toFixed(3);
+      c.style.filter    = 'blur('+(d*3.2).toFixed(2)+'px) saturate('+(1-d*0.35).toFixed(2)+')';
+      c.style.zIndex    = Math.round((1-d)*100);
+    }
+  }
+  function setRot(){gsap.set(ring,{rotateY:rot});depth();}
   layout();setRot();
   window.addEventListener('resize',layout);
 
+  var step=360/n;
+  // Encaja en la foto más cercana para que siempre haya una al frente
+  function snap(){
+    var target=Math.round(rot/step)*step;
+    gsap.to(o,{r:target,duration:.75,ease:'power3.out',
+      onUpdate:function(){rot=o.r;setRot();},
+      onComplete:function(){rot=target;setRot();schedule();}});
+    o.r=rot;
+  }
   function inertia(){
     if(isDrag)return;
     rot+=vel;vel*=0.94;setRot();
-    if(Math.abs(vel)>0.05)rafId=requestAnimationFrame(inertia);
+    if(Math.abs(vel)>0.05){rafId=requestAnimationFrame(inertia);}
+    else{snap();}
   }
   function pointerDown(x){
     isDrag=true;ring.classList.add('dragging');
     startX=x;lastX=x;startRot=rot;vel=0;
     if(rafId)cancelAnimationFrame(rafId);
+    gsap.killTweensOf(o);clearTimeout(timer);
   }
   function pointerMove(x){
     if(!isDrag)return;
@@ -2060,14 +2092,20 @@ gsap.fromTo('.gifts-head > *',{opacity:0,y:18},{opacity:1,y:0,duration:1,stagger
   ring.addEventListener('touchmove',function(e){pointerMove(e.touches[0].clientX);},{passive:true});
   ring.addEventListener('touchend',pointerUp);
 
-  /* giro lento automático hasta el primer arrastre */
-  var auto=true;
-  (function spin(){
-    if(auto&&!isDrag){rot+=0.12;setRot();}
-    requestAnimationFrame(spin);
-  })();
-  ring.addEventListener('mousedown',function(){auto=false;});
-  ring.addEventListener('touchstart',function(){auto=false;});
+  /* Autoplay tipo carrusel: avanza una foto y se detiene, en vez de girar
+     en continuo (así nunca queda una foto a medio camino al frente). */
+  function advance(){
+    if(isDrag)return;
+    o.r=rot;
+    gsap.to(o,{r:rot-step,duration:1.1,ease:'power2.inOut',
+      onUpdate:function(){rot=o.r;setRot();},
+      onComplete:function(){schedule();}});
+  }
+  function schedule(){
+    clearTimeout(timer);
+    timer=setTimeout(advance,3600);
+  }
+  schedule();
 
   gsap.fromTo('.wheel-scene',{opacity:0,y:36},{opacity:1,y:0,duration:1.1,ease:'power3.out',scrollTrigger:{trigger:'#galeria',start:'top 82%',once:true}});
   gsap.fromTo('.gal-hint',{opacity:0},{opacity:.85,duration:.9,delay:.35,scrollTrigger:{trigger:'#galeria',start:'top 82%',once:true}});
