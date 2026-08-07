@@ -10,14 +10,14 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="María &amp; Orlando · Boda · 19 de Diciembre 2026">
 <meta property="og:description" content="Boda · Sábado, 19 de Diciembre de 2026 · Estado de México">
-<meta property="og:image" content="https://boda-maria-y-ivan.vercel.app/og.jpg">
+<meta property="og:image" content="https://boda-maria-y-ivan.vercel.app/og-v2.jpg">
 <meta property="og:url" content="https://boda-maria-y-ivan.vercel.app/">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="es_MX">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="María &amp; Orlando · Boda · 19 de Diciembre 2026">
-<meta name="twitter:image" content="https://boda-maria-y-ivan.vercel.app/og.jpg">
+<meta name="twitter:image" content="https://boda-maria-y-ivan.vercel.app/og-v2.jpg">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -109,13 +109,13 @@ h1 em,h2 em,h3 em{font-style:italic;font-weight:600;color:var(--gold)}
 }
 /* Velo oscuro inferior: da contraste al monograma neón y remata hacia la siguiente sección */
 .hero::before{
-  content:"";position:absolute;left:0;right:0;bottom:0;height:62%;z-index:0;pointer-events:none;
+  content:"";position:absolute;left:0;right:0;bottom:0;height:54%;z-index:0;pointer-events:none;
   background:linear-gradient(to bottom,
     rgba(38,16,62,0) 0%,
-    rgba(38,16,62,.30) 34%,
-    rgba(32,13,54,.62) 62%,
-    rgba(28,11,48,.80) 86%,
-    rgba(28,11,48,.84) 100%);
+    rgba(38,16,62,.22) 30%,
+    rgba(32,13,54,.55) 58%,
+    rgba(26,10,46,.80) 84%,
+    rgba(22,8,40,.86) 100%);
 }
 .hero::after{
   content:"";position:absolute;left:0;right:0;bottom:0;height:70px;z-index:0;pointer-events:none;
@@ -152,37 +152,38 @@ h1 em,h2 em,h3 em{font-style:italic;font-weight:600;color:var(--gold)}
     0 3px 12px rgba(122,91,110,.12);
   position:relative;z-index:1;
 }
-.hero-content{position:relative;z-index:1;text-align:center;color:var(--accent-deep);padding:0 28px clamp(56px,11vh,110px);max-width:960px;}
-/* ---- Monograma shiny / neón (blanco + morado) ---- */
+.hero-content{position:relative;z-index:1;text-align:center;color:var(--accent-deep);padding:0 24px clamp(120px,19vh,190px);max-width:960px;}
+/* ---- Monograma shiny / neón (blanco + morado) ----
+   Sin background-clip:text ni filter: con los spans que GSAP transforma,
+   Chromium pinta la máscara del hermano y se ven los glifos cambiados. */
 .hero-name,.hero-and{
-  background-image:linear-gradient(100deg,
-    #ffffff 0%, #f3e6ff 12%, #c9a3f5 26%, #ffffff 40%,
-    #ffffff 52%, #b98df0 66%, #f6ecff 80%, #ffffff 100%);
-  background-size:260% 100%;
-  background-position:0% 50%;
-  -webkit-background-clip:text;background-clip:text;
-  color:transparent;-webkit-text-fill-color:transparent;
-  filter:
-    drop-shadow(0 0 3px rgba(255,255,255,.85))
-    drop-shadow(0 0 14px rgba(199,140,255,.75))
-    drop-shadow(0 0 34px rgba(150,80,225,.55))
-    drop-shadow(0 0 68px rgba(110,50,190,.40));
-  animation:heroShine 7s ease-in-out infinite;
+  color:#fdfaff;
+  text-shadow:
+    0 0 1px rgba(255,255,255,.9),
+    0 0 6px rgba(233,214,255,.95),
+    0 0 14px rgba(196,143,255,.85),
+    0 0 30px rgba(150,85,225,.60),
+    0 0 58px rgba(104,44,182,.42),
+    0 2px 3px rgba(24,9,42,.55);
+  animation:heroShine 4.5s ease-in-out infinite;
 }
-@keyframes heroShine{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes heroShine{
+  0%,100%{text-shadow:0 0 1px rgba(255,255,255,.9),0 0 6px rgba(233,214,255,.95),0 0 14px rgba(196,143,255,.85),0 0 30px rgba(150,85,225,.60),0 0 58px rgba(104,44,182,.42),0 2px 3px rgba(24,9,42,.55)}
+  50%    {text-shadow:0 0 2px rgba(255,255,255,1),  0 0 9px rgba(243,231,255,1),  0 0 22px rgba(212,168,255,.95),0 0 44px rgba(168,105,238,.72),0 0 82px rgba(120,58,205,.50),0 2px 3px rgba(24,9,42,.55)}
+}
 
 .hero-name{
-  font-family:var(--display);font-style:italic;font-weight:600;
-  font-size:clamp(58px,11vw,140px);line-height:.9;
-  margin-bottom:0;letter-spacing:-.02em;perspective:800px;
+  font-family:var(--display);font-style:italic;font-weight:700;
+  font-size:clamp(64px,13vw,150px);line-height:.92;
+  margin-bottom:0;letter-spacing:-.015em;perspective:800px;
 }
 .hero-name span{display:inline-block}
 .hero-and{
   display:block;font-family:var(--script);font-weight:400;
-  font-size:clamp(52px,8vw,100px);line-height:1;
-  margin:6px 0 0;animation-delay:-1.6s;
+  font-size:clamp(56px,9.5vw,112px);line-height:1.05;
+  margin:2px 0 0;animation-delay:-2.2s;
 }
-@media(prefers-reduced-motion:reduce){.hero-name,.hero-and{animation:none;background-position:30% 50%}}
+@media(prefers-reduced-motion:reduce){.hero-name,.hero-and{animation:none}}
 
 /* ============ SEAMS ============ */
 .seam{height:72px;background:linear-gradient(to bottom,var(--from,var(--bg)) 0%,color-mix(in srgb, var(--from,var(--bg)) 50%, var(--to,var(--surface)) 50%) 50%,var(--to,var(--surface)) 100%);pointer-events:none;}
@@ -256,7 +257,7 @@ h1 em,h2 em,h3 em{font-style:italic;font-weight:600;color:var(--gold)}
 
 /* ============ PADRINOS ============ */
 .section-paper.padrinos{overflow:hidden;}
-.section-paper.padrinos::before{content:"";position:absolute;inset:-2px;background:url('./bg-corners.jpeg') center/cover no-repeat;opacity:.50;pointer-events:none;z-index:0;
+.section-paper.padrinos::before{content:"";position:absolute;inset:-2px;background:url('./bg-padrinos.jpeg') center/cover no-repeat;opacity:.55;pointer-events:none;z-index:0;
   mask-image:linear-gradient(to bottom,transparent 0%,black 14%,black 86%,transparent 100%);
   -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 14%,black 86%,transparent 100%);}
 .section-paper.padrinos > .container{position:relative;z-index:1;}
@@ -272,8 +273,27 @@ h1 em,h2 em,h3 em{font-style:italic;font-weight:600;color:var(--gold)}
 .locs h2{text-align:center;font-size:clamp(36px,5vw,60px);margin-bottom:20px}
 .locs-sub{text-align:center;font-family:var(--italiana);font-size:19px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-soft);padding-left:.3em;margin-bottom:80px}
 .locs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:48px;max-width:1100px;margin:0 auto}
-.loc-card{background:var(--paper);padding:56px 40px 48px;border:1px solid var(--hair-gold);border-radius:2px;text-align:center;position:relative;box-shadow:0 1px 2px rgba(122,91,110,.06),0 12px 32px -10px rgba(122,91,110,.16),0 40px 90px -40px rgba(122,91,110,.25);transition:transform .7s cubic-bezier(.2,.7,.2,1),box-shadow .7s;transform-style:preserve-3d;will-change:transform;}
+.loc-card{
+  /* Capa 1 = destello especular que barre. Capa 2 = degradado rosa → azul. */
+  background-image:
+    linear-gradient(105deg,transparent 32%,rgba(255,255,255,.30) 42%,rgba(255,255,255,.92) 50%,rgba(255,255,255,.30) 58%,transparent 68%),
+    linear-gradient(152deg,#ffe4fa 0%,#fdeaff 26%,#f0e6ff 48%,#dfeeff 72%,#c9dcff 100%);
+  background-size:240% 100%,100% 100%;
+  background-position:-40% 50%,0 0;
+  background-repeat:no-repeat;
+  animation:locShine 5.5s cubic-bezier(.45,.05,.3,1) infinite;
+  padding:56px 40px 48px;border:1px solid var(--hair-gold);border-radius:2px;text-align:center;position:relative;box-shadow:0 1px 2px rgba(122,91,110,.06),0 12px 32px -10px rgba(122,91,110,.16),0 40px 90px -40px rgba(122,91,110,.25);transition:transform .7s cubic-bezier(.2,.7,.2,1),box-shadow .7s;transform-style:preserve-3d;will-change:transform;}
 .loc-card::before{content:"";position:absolute;inset:8px;border:1px solid var(--hair-gold);pointer-events:none;opacity:.6;}
+@keyframes locShine{
+  0%   {background-position:-40% 50%,0 0}
+  55%  {background-position:140% 50%,0 0}
+  100% {background-position:140% 50%,0 0}
+}
+/* La segunda tarjeta desfasa el destello para que no parpadeen a la vez */
+.locs-grid .loc-card:nth-child(2){animation-delay:-2.4s}
+/* Reactivo: al tocar/pasar el cursor el brillo se dispara y la tarjeta se levanta */
+.loc-card:hover,.loc-card:focus-within{animation-duration:1.6s;box-shadow:0 1px 2px rgba(122,91,110,.06),0 18px 44px -12px rgba(122,91,110,.28),0 0 34px -6px rgba(189,211,255,.75),0 0 26px -8px rgba(255,217,247,.8)}
+@media(prefers-reduced-motion:reduce){.loc-card{animation:none;background-position:200% 50%,0 0}}
 .washi{position:absolute;top:-14px;width:82px;height:24px;opacity:.8;box-shadow:0 2px 8px rgba(0,0,0,.12);}
 .washi--l{left:22px;transform:rotate(-6deg);background:linear-gradient(135deg,#e7c9ff 0%,#bdd3ff 50%,#e7c9ff 100%)}
 .washi--r{right:22px;transform:rotate(5deg);background:linear-gradient(135deg,#e7c9ff 0%,#c4a0e0 50%,#e7c9ff 100%)}
@@ -489,6 +509,13 @@ h1 em,h2 em,h3 em{font-style:italic;font-weight:600;color:var(--gold)}
 .tr-num{display:block;font-family:var(--sans);font-size:17px;font-weight:700;letter-spacing:.08em;color:var(--accent-deep);font-variant-numeric:tabular-nums;line-height:1.45;word-break:break-word}
 @media(prefers-reduced-motion:reduce){.tr-panel{transition:none}}
 
+/* ---- Hospedaje: fondo azul + textura ---- */
+.section-hosp{background:var(--blue-soft);padding:min(18vh,170px) 0;position:relative;overflow:hidden;contain:layout paint}
+.section-hosp::before{content:"";position:absolute;inset:-2px;background:url('./bg-hosp.jpeg') center/cover no-repeat;opacity:.55;pointer-events:none;z-index:0;
+  mask-image:linear-gradient(to bottom,transparent 0%,black 14%,black 86%,transparent 100%);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 14%,black 86%,transparent 100%);}
+.section-hosp > .container{position:relative;z-index:1;}
+
 /* ---- Hospedaje: carrusel (mismo formato que boda-roxana-y-omar) ---- */
 .hosp-carousel{position:relative;max-width:380px;margin:30px auto 0}
 .hosp-viewport{overflow:hidden}
@@ -504,7 +531,7 @@ h1 em,h2 em,h3 em{font-style:italic;font-weight:600;color:var(--gold)}
 .hosp-dots button{width:9px;height:9px;border-radius:50%;border:none;background:rgba(107,77,138,.28);cursor:pointer;padding:0;transition:background .25s,transform .25s}
 .hosp-dots button.active{background:var(--gold-deep);transform:scale(1.3)}
 .hosp-name{font-family:var(--display);font-weight:600;font-size:26px;color:var(--accent-deep);margin-bottom:8px;line-height:1.2}
-.hosp-city{font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-deep);padding-left:.3em;margin-bottom:20px}
+.hosp-city{font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--accent-deep);padding-left:.3em;margin-bottom:20px}
 .hosp-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 @media(max-width:430px){
   .hosp-carousel{max-width:340px}
@@ -689,7 +716,7 @@ footer{background:linear-gradient(160deg,#e7c9ff 0%,#bdd3ff 35%,#ccebff 65%,#ffd
 .footer-credit a:hover{color:var(--gold);opacity:1}
 
 /* ============ ENVELOPE ============ */
-#envelope-screen{position:fixed;inset:0;z-index:9998;background:#b9c9d4;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;}
+#envelope-screen{position:fixed;inset:0;z-index:9998;background:#e8f1fa;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;}
 #env-cover,#env-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block;}
 #env-cover{z-index:1;opacity:0;transition:opacity .6s ease;}
 #env-cover.is-loaded{opacity:1;}
@@ -699,9 +726,10 @@ footer{background:linear-gradient(160deg,#e7c9ff 0%,#bdd3ff 35%,#ccebff 65%,#ffd
 #env-hint{
   position:absolute;bottom:min(9vh,80px);left:50%;transform:translateX(-50%);
   font-family:var(--sans);font-size:13px;font-weight:700;letter-spacing:.5em;text-transform:uppercase;
-  color:#F8F5EC;padding:14px 28px 14px 28.5px;z-index:5;
-  background:rgba(122,91,110,.92);border:1px solid rgba(245,223,160,.6);
-  border-radius:999px;box-shadow:0 8px 28px rgba(70,48,62,.35);
+  color:#ffffff;padding:14px 28px 14px 28.5px;z-index:5;
+  background:linear-gradient(100deg,rgba(107,77,138,.94) 0%,rgba(93,88,163,.94) 50%,rgba(66,102,168,.94) 100%);
+  border:1px solid rgba(231,201,255,.75);
+  border-radius:999px;box-shadow:0 8px 28px rgba(60,45,110,.32),0 0 0 4px rgba(255,255,255,.28);
   backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
   animation:envHintPulse 1.8s ease-in-out infinite;
   user-select:none;pointer-events:none;white-space:nowrap;
@@ -1369,10 +1397,10 @@ footer{background:linear-gradient(160deg,#e7c9ff 0%,#bdd3ff 35%,#ccebff 65%,#ffd
     </div>
   </section>
 
-  <div class="seam" style="--from:var(--paper);--to:var(--surface)" aria-hidden="true"></div>
+  <div class="seam" style="--from:var(--paper);--to:var(--blue-soft)" aria-hidden="true"></div>
 
   <!-- HOSPEDAJE -->
-  <section class="section-surface">
+  <section class="section-hosp">
     <div class="container">
       <div class="gifts-head">
         <div class="eyebrow">Para tu estancia</div>
@@ -1433,7 +1461,7 @@ footer{background:linear-gradient(160deg,#e7c9ff 0%,#bdd3ff 35%,#ccebff 65%,#ffd
     </div>
   </section>
 
-  <div class="seam" style="--from:var(--surface);--to:var(--bg)" aria-hidden="true"></div>
+  <div class="seam" style="--from:var(--blue-soft);--to:var(--bg)" aria-hidden="true"></div>
 
   <!-- RSVP -->
   <section class="section-bg rsvp" id="rsvp">
