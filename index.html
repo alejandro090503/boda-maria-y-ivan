@@ -10,14 +10,14 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="María &amp; Orlando · Boda · 19 de Diciembre 2026">
 <meta property="og:description" content="Boda · Sábado, 19 de Diciembre de 2026 · Estado de México">
-<meta property="og:image" content="https://boda-maria-y-ivan.vercel.app/og-v3.jpg">
+<meta property="og:image" content="https://boda-maria-y-ivan.vercel.app/og-v4.jpg">
 <meta property="og:url" content="https://boda-maria-y-ivan.vercel.app/">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="es_MX">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="María &amp; Orlando · Boda · 19 de Diciembre 2026">
-<meta name="twitter:image" content="https://boda-maria-y-ivan.vercel.app/og-v3.jpg">
+<meta name="twitter:image" content="https://boda-maria-y-ivan.vercel.app/og-v4.jpg">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -355,8 +355,30 @@ h1 em,h2 em,h3 em{font-style:italic;font-weight:600;color:var(--gold)}
 .padrino-tipo{font-family:var(--sans);font-size:12px;letter-spacing:.5em;text-transform:uppercase;color:var(--gold-deep);padding-left:.5em;margin-bottom:14px;font-weight:700}
 .padrino-names{font-family:var(--display);font-style:italic;font-size:clamp(22px,2.6vw,29px);color:var(--accent-deep);line-height:1.45;font-weight:600}
 /* Una sola tarjeta: no debe estirarse a lo ancho de la rejilla */
-.padrinos-grid--uno{grid-template-columns:minmax(0,420px);justify-content:center}
-.padrino-rel{font-family:var(--italiana);font-size:clamp(13px,1.6vw,15px);letter-spacing:.3em;text-transform:uppercase;color:var(--gold-deep);padding-left:.3em;margin-top:16px;opacity:.9}
+.padrinos-grid--uno{grid-template-columns:minmax(0,470px);justify-content:center}
+
+/* -- Padrinos: uno a la vez, con fundido de entrada y salida -- */
+.pd-stage{
+  /* Alto fijo: sin esto la tarjeta brinca según el largo de cada nombre */
+  min-height:132px;display:flex;align-items:center;justify-content:center;
+}
+.pd-slide{
+  width:100%;opacity:1;transform:translateY(0);
+  transition:opacity .62s cubic-bezier(.4,0,.2,1),transform .62s cubic-bezier(.4,0,.2,1);
+}
+.pd-slide.is-out{opacity:0;transform:translateY(-10px)}
+.pd-rule{display:flex;align-items:center;justify-content:center;gap:10px;margin:14px 0 16px}
+.pd-rule i{display:block;height:1px;width:clamp(30px,8vw,58px);background:linear-gradient(to right,transparent,var(--gold))}
+.pd-rule i:last-child{background:linear-gradient(to left,transparent,var(--gold))}
+.pd-rule b{display:block;width:6px;height:6px;transform:rotate(45deg);background:var(--gold-deep);opacity:.85}
+.pd-dots{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin-top:30px}
+.pd-dots button{
+  width:8px;height:8px;border-radius:50%;border:none;padding:0;cursor:pointer;
+  background:rgba(107,77,138,.26);transition:background .3s,transform .3s;
+}
+.pd-dots button.active{background:var(--gold-deep);transform:scale(1.35)}
+#pd-icon{transition:opacity .62s ease}
+#pd-icon.is-out{opacity:0}
 
 /* ============ UBICACIONES ============ */
 .locs h2{text-align:center;font-size:clamp(36px,5vw,60px);margin-bottom:20px}
@@ -893,7 +915,8 @@ footer{background:linear-gradient(160deg,#e7c9ff 0%,#bdd3ff 35%,#ccebff 65%,#ffd
   transition:opacity .35s ease;
 }
 #env-hint.is-fading{opacity:0;}
-#envelope-screen.is-dissolving{opacity:0;transition:opacity 1.5s ease-in-out;pointer-events:none;}
+/* Disolvencia uniforme: curva lineal, sin acelerar ni frenar */
+#envelope-screen.is-dissolving{opacity:0;transition:opacity 1.8s linear;pointer-events:none;}
 @keyframes envHintPulse{0%,100%{opacity:.92;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.05)}}
 #env-flash{position:fixed;inset:0;z-index:9999;background:var(--bg);opacity:0;pointer-events:none;}
 .wrap{visibility:hidden}
@@ -909,12 +932,12 @@ footer{background:linear-gradient(160deg,#e7c9ff 0%,#bdd3ff 35%,#ccebff 65%,#ffd
 
 <!-- ENVELOPE OPENING -->
 <div id="envelope-screen" role="button" aria-label="Toca para abrir la invitación" tabindex="0">
-  <img id="env-cover" src="./envelope-cover.jpg" alt="Sobre con sello M A" fetchpriority="high">
+  <img id="env-cover" src="./envelope-cover.jpg" alt="Sobre con sello de lacre M &amp; O" fetchpriority="high">
   <video id="env-video" src="./envelope-open.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
   <div id="env-hint">Toca para abrir</div>
 </div>
 <div id="env-flash" aria-hidden="true"></div>
-<audio id="music" preload="none" loop>
+<audio id="music" preload="none">
   <source src="https://bsjoelxktbvlavfoozhk.supabase.co/storage/v1/object/public/fotos-clientes/audio/boda-maria-y-ivan/cancion.mp3" type="audio/mpeg">
 </audio>
 <button class="vinyl-btn" id="music-btn" type="button" aria-label="Reproducir música de la invitación">
@@ -1028,18 +1051,15 @@ footer{background:linear-gradient(160deg,#e7c9ff 0%,#bdd3ff 35%,#ccebff 65%,#ffd
       <h2>Nuestros <em>padrinos</em></h2>
       <div class="padrinos-grid padrinos-grid--uno">
         <div class="padrino-card">
-          <div class="padrino-icon">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 21V9.5a3 3 0 0 1 6 0V21"/>
-              <path d="M12 6.5V3.2"/>
-              <path d="M10.4 4.4h3.2"/>
-              <path d="M12 9.5c-.9 1.4-1.4 2.5-1.4 3.4a1.4 1.4 0 0 0 2.8 0c0-.9-.5-2-1.4-3.4Z"/>
-              <path d="M6.5 21h11"/>
-            </svg>
+          <div class="padrino-icon" id="pd-icon" aria-hidden="true"></div>
+          <div class="pd-stage" aria-live="polite">
+            <div class="pd-slide" id="pd-slide">
+              <div class="padrino-tipo" id="pd-tipo"></div>
+              <div class="pd-rule" aria-hidden="true"><i></i><b></b><i></i></div>
+              <div class="padrino-names" id="pd-names"></div>
+            </div>
           </div>
-          <div class="padrino-tipo">Padrinos de velación</div>
-          <div class="padrino-names">Delfina y Simón</div>
-          <div class="padrino-rel">Los padres del novio</div>
+          <div class="pd-dots" id="pd-dots"></div>
         </div>
       </div>
     </div>
@@ -1833,10 +1853,19 @@ function launchInvitation(){
     if(!bgMusic || musicStarted) return;
     musicStarted = true;
     bgMusic.volume = 0;
-    bgMusic.play().catch(()=>{ musicStarted = false; });
-    gsap.to(bgMusic,{volume:.45,duration:3,ease:'power1.inOut'});
+    bgMusic.play().then(()=>{
+      // Fade con GSAP, pero si el rAF está dormido (pestaña en segundo
+      // plano) el volumen se quedaría en 0 y la música sonaría muda.
+      gsap.to(bgMusic,{volume:.45,duration:3,ease:'power1.inOut'});
+      setTimeout(()=>{ if(bgMusic.volume < .4) bgMusic.volume = .45; }, 3400);
+    }).catch(()=>{
+      // El navegador bloqueó el play: reintenta en el siguiente toque.
+      musicStarted = false;
+      document.addEventListener('pointerdown', retryMusic, {once:true});
+    });
     if(vinylBtn) vinylBtn.classList.add('is-ready');
   }
+  function retryMusic(){ musicStarted = false; startMusic(); }
 
   function finishOpening(){
     if(finished) return;
@@ -1849,7 +1878,7 @@ function launchInvitation(){
     // Transición CSS, no GSAP: si la pestaña estaba en segundo plano el
     // rAF no avanza y el sobre se quedaba encima sin desvanecerse.
     envScreen.classList.add('is-dissolving');
-    setTimeout(()=>{ envScreen.style.display='none'; }, 1650);
+    setTimeout(()=>{ envScreen.style.display='none'; }, 1950);
   }
 
   function openEnvelope(){
@@ -1862,10 +1891,18 @@ function launchInvitation(){
     envHint.classList.add('is-fading');
     envCover.classList.add('is-fading');
     envVideo.classList.add('is-playing');
-    // El video dura 4 s; a los 4 s arranca la disolvencia.
+    // El video dura 2 s; ahí arranca la disolvencia.
     // El timeout de seguridad cubre el caso de que no pueda reproducirse.
-    const safety = setTimeout(finishOpening, 5200);
+    const safety = setTimeout(finishOpening, 3000);
     envVideo.addEventListener('ended',()=>{clearTimeout(safety);finishOpening();},{once:true});
+    // 'ended' no siempre llega (si el navegador pausa el video al pasar a
+    // segundo plano, por ejemplo). Con timeupdate el corte cae en el 2.0 s.
+    envVideo.addEventListener('timeupdate',function tu(){
+      if(envVideo.currentTime >= 1.95){
+        envVideo.removeEventListener('timeupdate',tu);
+        clearTimeout(safety);finishOpening();
+      }
+    });
     envVideo.addEventListener('error',()=>{clearTimeout(safety);finishOpening();},{once:true});
     const playPromise = envVideo.play();
     if(playPromise && playPromise.catch){
@@ -2017,6 +2054,91 @@ gsap.fromTo('.kids-card',{opacity:0,y:40,scale:.97},{opacity:1,y:0,scale:1,durat
 
 // ------ GIFTS ------
 gsap.fromTo('.gifts-head > *',{opacity:0,y:18},{opacity:1,y:0,duration:1,stagger:.1,scrollTrigger:{trigger:'.gifts-head',start:'top 80%'}});
+/* ------ PADRINOS: uno a la vez con fundido ------ */
+(function(){
+  var stage=document.getElementById('pd-slide');
+  if(!stage)return;
+  var elTipo=document.getElementById('pd-tipo'),
+      elNom=document.getElementById('pd-names'),
+      elIcon=document.getElementById('pd-icon'),
+      elDots=document.getElementById('pd-dots');
+
+  var S='<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">',E='</svg>';
+  var ICON={
+    vela: S+'<path d="M9 21V9.5a3 3 0 0 1 6 0V21"/><path d="M12 6.4V3.2"/><path d="M10.4 4.3h3.2"/><path d="M12 9.5c-.9 1.4-1.4 2.5-1.4 3.4a1.4 1.4 0 0 0 2.8 0c0-.9-.5-2-1.4-3.4Z"/><path d="M6.5 21h11"/>'+E,
+    anillos: S+'<circle cx="9" cy="14.5" r="5.2"/><circle cx="15.6" cy="14.5" r="5.2"/><path d="M15.6 6.2l-1.5 2.4h3l-1.5-2.4Z"/>'+E,
+    lazo: S+'<path d="M12 13c-2.6-2.6-9-1.4-9 2.6C3 18.4 5 20 7.4 20c3 0 4.6-3.4 4.6-7Z"/><path d="M12 13c2.6-2.6 9-1.4 9 2.6C21 18.4 19 20 16.6 20c-3 0-4.6-3.4-4.6-7Z"/><circle cx="12" cy="12.4" r="1.7"/><path d="M12 10.7V4"/>'+E,
+    arras: S+'<circle cx="8.5" cy="15" r="3.1"/><circle cx="15.5" cy="15" r="3.1"/><circle cx="12" cy="9" r="3.1"/><path d="M4 21h16"/>'+E,
+    biblia: S+'<path d="M4 5.2A2.2 2.2 0 0 1 6.2 3H19v15H6.2A2.2 2.2 0 0 0 4 20.2V5.2Z"/><path d="M11.5 7v6M9 9.4h5"/>'+E,
+    cristo: S+'<path d="M12 3v18"/><path d="M7 8.6h10"/><path d="M12 21c-2 0-3.4-.6-3.4-.6"/>'+E,
+    foto: S+'<rect x="3" y="6.6" width="18" height="13" rx="2.2"/><path d="M8.6 6.6l1.5-2.3h3.8l1.5 2.3"/><circle cx="12" cy="13.2" r="3.4"/>'+E,
+    musica: S+'<path d="M9 18V5.4l10-2v12.2"/><circle cx="6.6" cy="18" r="2.6"/><circle cx="16.6" cy="15.6" r="2.6"/>'+E,
+    ramo: S+'<path d="M12 21V11"/><path d="M12 11c0-3 1.6-5.2 4-5.8-.3 3-1.7 5-4 5.8Z"/><path d="M12 11c0-3-1.6-5.2-4-5.8.3 3 1.7 5 4 5.8Z"/><path d="M8.6 21h6.8"/>'+E,
+    pastel: S+'<path d="M4 20.4v-5.2c0-1.5 1.3-2.6 2.9-2.6h10.2c1.6 0 2.9 1.1 2.9 2.6v5.2Z"/><path d="M4 17.2c1.6-1.4 3.2-1.4 4.8 0s3.2 1.4 4.8 0 3.2-1.4 4.8 0"/><path d="M12 12.6V9.4"/><circle cx="12" cy="7.6" r="1.3"/>'+E,
+    cojines: S+'<rect x="3.6" y="7.4" width="16.8" height="10.4" rx="3"/><path d="M6.6 10.4h.01M17.4 14.8h.01"/>'+E
+  };
+
+  var LISTA=[
+    {t:'Velación',           n:'Delfina Varillas &amp; Simón Andrade',      i:'vela'},
+    {t:'Anillos',            n:'Angela Paredes &amp; Rafael Arjona',        i:'anillos'},
+    {t:'Lazo',               n:'Rosario Varillas &amp; Jesús Almeyda',      i:'lazo'},
+    {t:'Arras',              n:'Karela Villaseñor &amp; Rodrigo Valencia',  i:'arras'},
+    {t:'Biblia y Rosario',   n:'Teresa García &amp; Gonzalo Varillas',      i:'biblia'},
+    {t:'Cristo',             n:'Mónica García &amp; Eduardo Ledesma',       i:'cristo'},
+    {t:'Fotografía',         n:'Teresa Paredes &amp; Alejandro Cisneros',   i:'foto'},
+    {t:'Música',             n:'Ofelia Orozco &amp; Hugo Arjona',           i:'musica'},
+    {t:'Ramo',               n:'Vianey Andrade',                            i:'ramo'},
+    {t:'Pastel',             n:'Luis Arjona',                               i:'pastel'},
+    {t:'Cojines',            n:'Christian Cossío',                          i:'cojines'}
+  ];
+
+  var idx=0,timer=null,swapping=false;
+
+  LISTA.forEach(function(_,k){
+    var b=document.createElement('button');
+    b.type='button';
+    b.setAttribute('aria-label','Padrinos de '+LISTA[k].t);
+    b.addEventListener('click',function(){go(k,true);});
+    elDots.appendChild(b);
+  });
+  var dots=elDots.querySelectorAll('button');
+
+  function paint(k){
+    elTipo.textContent=LISTA[k].t;
+    elNom.innerHTML=LISTA[k].n;
+    elIcon.innerHTML=ICON[LISTA[k].i]||'';
+    dots.forEach(function(d,j){d.classList.toggle('active',j===k);});
+  }
+  function go(k,manual){
+    if(swapping&&!manual)return;
+    swapping=true;
+    stage.classList.add('is-out');elIcon.classList.add('is-out');
+    setTimeout(function(){
+      idx=(k+LISTA.length)%LISTA.length;
+      paint(idx);
+      stage.classList.remove('is-out');elIcon.classList.remove('is-out');
+      swapping=false;
+      schedule();
+    },620);
+  }
+  function schedule(){clearTimeout(timer);timer=setTimeout(function(){go(idx+1);},3800);}
+
+  paint(0);
+  // Arranca al entrar en pantalla, no antes: si no, los invitados se pierden
+  // los primeros padrinos mientras siguen arriba en la invitación.
+  var sec=document.querySelector('.padrinos'),started=false;
+  function start(){ if(started)return; started=true; schedule(); }
+  if(window.IntersectionObserver&&sec){
+    var io=new IntersectionObserver(function(en){
+      en.forEach(function(e){ if(e.isIntersecting){io.disconnect();start();} });
+    },{threshold:.25});
+    io.observe(sec);
+    // Red de seguridad: si el observer nunca dispara (pestaña en segundo
+    // plano al cargar, por ejemplo) la rotación arranca igual.
+    setTimeout(start,20000);
+  }else{start();}
+})();
+
 /* ------ GALERÍA: rueda 3D con arrastre e inercia ------ */
 (function(){
   var ring=document.getElementById('wheel-ring');
