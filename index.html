@@ -104,7 +104,7 @@ h1 em,h2 em,h3 em{font-style:italic;font-weight:600;color:var(--gold)}
   display:flex;align-items:flex-end;justify-content:center;
   overflow:hidden;isolation:isolate;contain:layout paint;
   background:
-    url('https://bsjoelxktbvlavfoozhk.supabase.co/storage/v1/object/public/fotos-clientes/464176f2-1f0c-4e62-b95f-f1be6ded5352/1785713693245-5.jpg') center/cover no-repeat,
+    url('./hero-bg.jpg') center 30%/cover no-repeat,
     linear-gradient(160deg,#e7c9ff 0%,#ccebff 50%,#bdd3ff 100%);
 }
 /* Velo oscuro inferior: da contraste al monograma neón y remata hacia la siguiente sección */
@@ -287,7 +287,7 @@ h1 em,h2 em,h3 em{font-style:italic;font-weight:600;color:var(--gold)}
   color:var(--accent-deep);
   background:
     linear-gradient(180deg,rgba(30,12,52,.42) 0%,rgba(30,12,52,.58) 45%,rgba(30,12,52,.46) 100%),
-    url('https://bsjoelxktbvlavfoozhk.supabase.co/storage/v1/object/public/fotos-clientes/464176f2-1f0c-4e62-b95f-f1be6ded5352/1785713712652-0.jpg') center/cover no-repeat,
+    url('./date-hero.jpg') center 38%/cover no-repeat,
     linear-gradient(135deg,#ffd9f7 0%,#e7c9ff 50%,#bdd3ff 100%);
 }
 /* Scrim central: garantiza >7:1 sobre el bloque de texto sin apagar la foto en los bordes */
@@ -353,7 +353,10 @@ h1 em,h2 em,h3 em{font-style:italic;font-weight:600;color:var(--gold)}
 .padrino-card{background:rgba(255,255,255,.78);padding:40px 28px;border:1px solid var(--hair-gold);text-align:center;position:relative;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
 .padrino-icon{margin:0 auto 18px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--gold-deep)}
 .padrino-tipo{font-family:var(--sans);font-size:12px;letter-spacing:.5em;text-transform:uppercase;color:var(--gold-deep);padding-left:.5em;margin-bottom:14px;font-weight:700}
-.padrino-names{font-family:var(--display);font-style:italic;font-size:clamp(18px,2vw,22px);color:var(--accent-deep);line-height:1.45;font-weight:600}
+.padrino-names{font-family:var(--display);font-style:italic;font-size:clamp(22px,2.6vw,29px);color:var(--accent-deep);line-height:1.45;font-weight:600}
+/* Una sola tarjeta: no debe estirarse a lo ancho de la rejilla */
+.padrinos-grid--uno{grid-template-columns:minmax(0,420px);justify-content:center}
+.padrino-rel{font-family:var(--italiana);font-size:clamp(13px,1.6vw,15px);letter-spacing:.3em;text-transform:uppercase;color:var(--gold-deep);padding-left:.3em;margin-top:16px;opacity:.9}
 
 /* ============ UBICACIONES ============ */
 .locs h2{text-align:center;font-size:clamp(36px,5vw,60px);margin-bottom:20px}
@@ -456,13 +459,15 @@ h1 em,h2 em,h3 em{font-style:italic;font-weight:600;color:var(--gold)}
 
 /* -- Colores a evitar: círculos tachados como en la referencia -- */
 .dc-avoid-list{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(16px,4vw,34px);margin:26px auto 0;max-width:640px}
-.dc-avoid-item{display:flex;flex-direction:column;align-items:center;gap:12px}
+/* Ancho fijo para que todos los círculos formen filas parejas
+   aunque la etiqueta sea larga ("Verde cromo" cae a dos líneas) */
+.dc-avoid-item{display:flex;flex-direction:column;align-items:center;gap:12px;width:78px;text-align:center}
 .dc-avoid-c{width:clamp(46px,11vw,60px);height:clamp(46px,11vw,60px);border-radius:50%;border:1px solid rgba(190,120,130,.6);position:relative;overflow:hidden}
 .dc-avoid-c::after{content:"";position:absolute;top:50%;left:-8%;width:116%;height:1px;background:rgba(190,120,130,.85);transform:rotate(-45deg);transform-origin:center}
-.dc-avoid-lbl{font-family:var(--serif);font-size:clamp(14px,1.7vw,16px);color:var(--ink);font-weight:600;letter-spacing:.02em}
+.dc-avoid-lbl{font-family:var(--serif);font-size:clamp(14px,1.7vw,16px);color:var(--ink);font-weight:600;letter-spacing:.02em;line-height:1.35}
 .dc-note{font-family:var(--display);font-style:italic;font-weight:600;font-size:clamp(17px,2.2vw,21px);color:var(--accent-deep);margin-top:34px;text-align:center}
-/* En móvil, 3 + 3 en vez de 5 + 1 suelto */
-@media(max-width:560px){.dc-avoid-list{max-width:290px;gap:20px 22px}}
+/* En móvil, filas de 3 */
+@media(max-width:560px){.dc-avoid-list{max-width:300px;gap:22px 14px}}
 
 /* ============ GALERÍA — RUEDA 3D ============ */
 .galeria{text-align:center;overflow:visible}
@@ -1020,31 +1025,20 @@ footer{background:linear-gradient(160deg,#e7c9ff 0%,#bdd3ff 35%,#ccebff 65%,#ffd
     <div class="container">
       <div class="eyebrow">Quienes nos acompañan</div>
       <h2>Nuestros <em>padrinos</em></h2>
-      <div class="padrinos-grid">
+      <div class="padrinos-grid padrinos-grid--uno">
         <div class="padrino-card">
           <div class="padrino-icon">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2a3 3 0 0 0-3 3c0 1.1.6 2.1 1.5 2.6"/>
-              <path d="M12 2a3 3 0 0 1 3 3c0 1.1-.6 2.1-1.5 2.6"/>
-              <path d="M9 8.6C6.7 9.4 5 11.5 5 14v2h14v-2c0-2.5-1.7-4.6-4-5.4"/>
-              <path d="M12 2v6"/>
-              <path d="M9 22l3-4 3 4"/>
+              <path d="M9 21V9.5a3 3 0 0 1 6 0V21"/>
+              <path d="M12 6.5V3.2"/>
+              <path d="M10.4 4.4h3.2"/>
+              <path d="M12 9.5c-.9 1.4-1.4 2.5-1.4 3.4a1.4 1.4 0 0 0 2.8 0c0-.9-.5-2-1.4-3.4Z"/>
+              <path d="M6.5 21h11"/>
             </svg>
           </div>
-          <div class="padrino-tipo">Madrina</div>
-          <div class="padrino-names">Por confirmar</div>
-        </div>
-        <div class="padrino-card">
-          <div class="padrino-icon">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-          </div>
-          <div class="padrino-tipo">Padrino</div>
-          <div class="padrino-names">Por confirmar</div>
+          <div class="padrino-tipo">Padrinos de velación</div>
+          <div class="padrino-names">Delfina y Simón</div>
+          <div class="padrino-rel">Los padres del novio</div>
         </div>
       </div>
     </div>
@@ -1164,6 +1158,7 @@ footer{background:linear-gradient(160deg,#e7c9ff 0%,#bdd3ff 35%,#ccebff 65%,#ffd
           <div class="wheel-card"><img src="./foto3.jpg" alt="María y Orlando" loading="lazy"></div>
           <div class="wheel-card"><img src="./foto4.jpg" alt="María y Orlando" loading="lazy"></div>
           <div class="wheel-card"><img src="./foto5.jpg" alt="María y Orlando" loading="lazy"></div>
+          <div class="wheel-card"><img src="./foto6.jpg" alt="Los anillos de compromiso" loading="lazy"></div>
         </div>
       </div>
       <p class="gal-hint">Arrastra para girar</p>
@@ -1370,7 +1365,8 @@ footer{background:linear-gradient(160deg,#e7c9ff 0%,#bdd3ff 35%,#ccebff 65%,#ffd
           <div class="dc-avoid-item"><span class="dc-avoid-c" style="background:#fdf6e9"></span><span class="dc-avoid-lbl">Ivory</span></div>
           <div class="dc-avoid-item"><span class="dc-avoid-c" style="background:#fbf3e4"></span><span class="dc-avoid-lbl">Marfil</span></div>
           <div class="dc-avoid-item"><span class="dc-avoid-c" style="background:#f8e2b8"></span><span class="dc-avoid-lbl">Crema</span></div>
-          <div class="dc-avoid-item"><span class="dc-avoid-c" style="background:#c9a044"></span><span class="dc-avoid-lbl">Dorado</span></div>
+          <div class="dc-avoid-item"><span class="dc-avoid-c" style="background:#3e7c4f"></span><span class="dc-avoid-lbl">Verde cromo</span></div>
+          <div class="dc-avoid-item"><span class="dc-avoid-c" style="background:#d3212d"></span><span class="dc-avoid-lbl">Rojo</span></div>
         </div>
         <p class="dc-note">Favor de respetar el código de vestimenta.</p>
       </div>
