@@ -10,14 +10,14 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="María &amp; Orlando · Boda · 19 de Diciembre 2026">
 <meta property="og:description" content="Boda · Sábado, 19 de Diciembre de 2026 · Estado de México">
-<meta property="og:image" content="https://boda-maria-y-ivan.vercel.app/og-v2.jpg">
+<meta property="og:image" content="https://boda-maria-y-ivan.vercel.app/og-v3.jpg">
 <meta property="og:url" content="https://boda-maria-y-ivan.vercel.app/">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="es_MX">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="María &amp; Orlando · Boda · 19 de Diciembre 2026">
-<meta name="twitter:image" content="https://boda-maria-y-ivan.vercel.app/og-v2.jpg">
+<meta name="twitter:image" content="https://boda-maria-y-ivan.vercel.app/og-v3.jpg">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -893,6 +893,7 @@ footer{background:linear-gradient(160deg,#e7c9ff 0%,#bdd3ff 35%,#ccebff 65%,#ffd
   transition:opacity .35s ease;
 }
 #env-hint.is-fading{opacity:0;}
+#envelope-screen.is-dissolving{opacity:0;transition:opacity 1.5s ease-in-out;pointer-events:none;}
 @keyframes envHintPulse{0%,100%{opacity:.92;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.05)}}
 #env-flash{position:fixed;inset:0;z-index:9999;background:var(--bg);opacity:0;pointer-events:none;}
 .wrap{visibility:hidden}
@@ -1840,13 +1841,15 @@ function launchInvitation(){
   function finishOpening(){
     if(finished) return;
     finished = true;
-    gsap.to(envFlash,{opacity:1,duration:1,ease:'power2.inOut',onComplete:()=>{
-      envScreen.style.display='none';
-      wrap.style.visibility='visible';
-      launchInvitation();
-      startMusic();
-      gsap.to(envFlash,{opacity:0,duration:1,ease:'power2.inOut',delay:.05,onComplete:()=>{envFlash.style.display='none';}});
-    }});
+    // Disolvencia: la invitación ya está debajo y el sobre se desvanece
+    // encima. Nada de destello blanco intermedio.
+    wrap.style.visibility='visible';
+    launchInvitation();
+    envFlash.style.display='none';
+    // Transición CSS, no GSAP: si la pestaña estaba en segundo plano el
+    // rAF no avanza y el sobre se quedaba encima sin desvanecerse.
+    envScreen.classList.add('is-dissolving');
+    setTimeout(()=>{ envScreen.style.display='none'; }, 1650);
   }
 
   function openEnvelope(){
@@ -1859,8 +1862,9 @@ function launchInvitation(){
     envHint.classList.add('is-fading');
     envCover.classList.add('is-fading');
     envVideo.classList.add('is-playing');
-    // Safety timeout in case video can't play
-    const safety = setTimeout(finishOpening, 9500);
+    // El video dura 4 s; a los 4 s arranca la disolvencia.
+    // El timeout de seguridad cubre el caso de que no pueda reproducirse.
+    const safety = setTimeout(finishOpening, 5200);
     envVideo.addEventListener('ended',()=>{clearTimeout(safety);finishOpening();},{once:true});
     envVideo.addEventListener('error',()=>{clearTimeout(safety);finishOpening();},{once:true});
     const playPromise = envVideo.play();
