@@ -837,6 +837,16 @@ h1 em,h2 em,h3 em{font-style:italic;font-weight:600;color:var(--gold)}
 .rsvp-input::placeholder{color:var(--ink-soft);opacity:.6;}
 .rsvp-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
 #rsvp-feedback{font-family:var(--serif);font-style:italic;font-size:16px;font-weight:600;text-align:center;margin:18px auto 0;max-width:420px;line-height:1.5;}
+.rsvp-asignados{display:flex;flex-direction:column;gap:12px;max-width:420px;margin:0 auto 20px;}
+.rsvp-person-card{display:flex;flex-direction:column;gap:10px;padding:15px 18px;background:rgba(255,255,255,.82);border:1.5px solid rgba(201,160,68,.3);border-radius:14px;transition:border-color .25s,background .25s;}
+.rsvp-person-card[data-choice="yes"]{border-color:#4a7848;background:rgba(74,120,72,.09);}
+.rsvp-person-card[data-choice="no"]{border-color:var(--accent-deep);background:rgba(107,77,138,.09);}
+.rsvp-person-name{font-family:var(--display);font-size:21px;font-weight:600;color:var(--ink);text-align:center;}
+.rsvp-person-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.rsvp-mini-btn{padding:12px;border:1.5px solid rgba(201,160,68,.3);border-radius:50px;background:rgba(255,255,255,.7);font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);cursor:pointer;transition:all .25s;min-height:46px;-webkit-tap-highlight-color:transparent;}
+.rsvp-mini-btn.rsvp-mini-yes-on{background:#4a7848;border-color:#4a7848;color:#fff;}
+.rsvp-mini-btn.rsvp-mini-no-on{background:var(--accent-deep);border-color:var(--accent-deep);color:#fff;}
+.rsvp-mini-btn:disabled{opacity:.55;cursor:not-allowed;}
 
 /* ============ MUSIC PLAYER (vinyl flotante) ============ */
 .vinyl-btn{position:fixed;bottom:20px;right:20px;z-index:9000;width:72px;height:72px;border-radius:50%;padding:0;border:none;cursor:pointer;background:transparent;opacity:0;transform:scale(.6);pointer-events:none;transition:transform .35s cubic-bezier(.2,.7,.2,1);box-shadow:0 4px 18px rgba(0,0,0,.45),0 0 0 1px rgba(205,190,223,.18);}
@@ -1386,8 +1396,10 @@ footer{background:linear-gradient(160deg,#e7c9ff 0%,#bdd3ff 35%,#ccebff 65%,#ffd
           <div class="dc-avoid-item"><span class="dc-avoid-c" style="background:#fdf6e9"></span><span class="dc-avoid-lbl">Ivory</span></div>
           <div class="dc-avoid-item"><span class="dc-avoid-c" style="background:#fbf3e4"></span><span class="dc-avoid-lbl">Marfil</span></div>
           <div class="dc-avoid-item"><span class="dc-avoid-c" style="background:#f8e2b8"></span><span class="dc-avoid-lbl">Crema</span></div>
-          <div class="dc-avoid-item"><span class="dc-avoid-c" style="background:#3e7c4f"></span><span class="dc-avoid-lbl">Verde cromo</span></div>
+          <div class="dc-avoid-item"><span class="dc-avoid-c" style="background:#2f7d46"></span><span class="dc-avoid-lbl">Verde</span></div>
           <div class="dc-avoid-item"><span class="dc-avoid-c" style="background:#d3212d"></span><span class="dc-avoid-lbl">Rojo</span></div>
+          <div class="dc-avoid-item"><span class="dc-avoid-c" style="background:#1b2a4e"></span><span class="dc-avoid-lbl">Azul navy</span></div>
+          <div class="dc-avoid-item"><span class="dc-avoid-c" style="background:#e8c4c8"></span><span class="dc-avoid-lbl">Rosa palo</span></div>
         </div>
         <p class="dc-note">Favor de respetar el código de vestimenta.</p>
       </div>
@@ -1634,10 +1646,9 @@ footer{background:linear-gradient(160deg,#e7c9ff 0%,#bdd3ff 35%,#ccebff 65%,#ffd
             <button class="rsvp-toggle-btn" id="rsvp-no" type="button">No podré asistir</button>
           </div>
 
-          <div class="rsvp-fields" id="rsvp-fields" style="display:none">
-            <input class="rsvp-input" id="rsvp-nombre" type="text" placeholder="Tu nombre completo" autocomplete="name">
-            <input class="rsvp-input" id="rsvp-num" type="number" placeholder="Número de personas" min="1" max="10">
-          </div>
+          <div class="rsvp-fields" id="rsvp-fields" style="display:none"></div>
+
+          <div class="rsvp-asignados" id="rsvp-asignados" style="display:none"></div>
 
           <button class="rsvp-btn" id="rsvp-confirm-btn" type="button">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="flex-shrink:0"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
@@ -1692,8 +1703,8 @@ const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ------ RSVP PANEL-INVITADOS ------
 (function(){
-  var SLUG     = 'boda-maria-y-ivan';
   var API      = 'https://panel-invitados.vercel.app/api/confirmar';
+  var RSVP_URL = 'https://boda-maria-y-ivan.vercel.app';
   var DEADLINE = new Date(2026, 8, 30, 23, 59, 59, 999);
   var frozen   = Date.now() > DEADLINE.getTime();
 
@@ -1708,54 +1719,170 @@ const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var yesBtn     = document.getElementById('rsvp-yes');
   var noBtn      = document.getElementById('rsvp-no');
   var fieldsWrap = document.getElementById('rsvp-fields');
-  var nombreInput= document.getElementById('rsvp-nombre');
-  var numInput   = document.getElementById('rsvp-num');
+  var asigEl     = document.getElementById('rsvp-asignados');
   if(!confirmBtn) return;
 
-  var params = new URLSearchParams(window.location.search);
-  var paraName = params.get('para') || '';
-  var pases    = parseInt(params.get('pases'),10) || 0;
+  var params   = new URLSearchParams(window.location.search);
+  var paraName = (params.get('para') || '').trim();
+  var rawP     = parseInt(params.get('pases'),10);
+  var pases    = (isNaN(rawP) || rawP < 1 || rawP > 20) ? 1 : rawP;
   var asistira = null;
+  var nombresAsignados = [];
+  var asignadosChoices = {};
 
   if(paraName){
     greetingEl.innerHTML = '¡Hola, <strong>'+paraName+'</strong>! Nos encantaría contar contigo.';
     greetingEl.style.display = '';
-    if(nombreInput) nombreInput.value = paraName;
   }
-  if(pases > 0){
-    pasesInfo.style.display = '';
-    pasesNote.textContent = paraName ? 'Pases para '+paraName : 'Tus pases';
-    pasesCount.textContent = pases;
-    if(numInput){ numInput.max = pases; numInput.value = pases; }
+  pasesInfo.style.display = '';
+  pasesNote.textContent = paraName ? 'Pases para '+paraName : 'Tus pases';
+  pasesCount.textContent = pases;
+
+  function renderAsignados(){
+    if(!asigEl) return;
+    asigEl.innerHTML = '';
+    nombresAsignados.forEach(function(nm, idx){
+      var pc = document.createElement('div');
+      pc.className = 'rsvp-person-card';
+      var choice = asignadosChoices[idx];
+      if(choice) pc.setAttribute('data-choice', choice);
+      var name = document.createElement('div');
+      name.className = 'rsvp-person-name';
+      name.textContent = nm;
+      var tog = document.createElement('div');
+      tog.className = 'rsvp-person-toggle';
+      var bY = document.createElement('button');
+      bY.type = 'button';
+      bY.className = 'rsvp-mini-btn' + (choice === 'yes' ? ' rsvp-mini-yes-on' : '');
+      bY.textContent = 'Asistiré';
+      bY.disabled = frozen;
+      bY.addEventListener('click', function(){ if(frozen) return; asignadosChoices[idx] = 'yes'; renderAsignados(); });
+      var bN = document.createElement('button');
+      bN.type = 'button';
+      bN.className = 'rsvp-mini-btn' + (choice === 'no' ? ' rsvp-mini-no-on' : '');
+      bN.textContent = 'No asistiré';
+      bN.disabled = frozen;
+      bN.addEventListener('click', function(){ if(frozen) return; asignadosChoices[idx] = 'no'; renderAsignados(); });
+      tog.appendChild(bY); tog.appendChild(bN);
+      pc.appendChild(name); pc.appendChild(tog);
+      asigEl.appendChild(pc);
+    });
+  }
+
+  function renderFields(count){
+    if(!fieldsWrap) return;
+    fieldsWrap.innerHTML = '';
+    for(var i = 0; i < count; i++){
+      var inp = document.createElement('input');
+      inp.className    = 'rsvp-input';
+      inp.type         = 'text';
+      inp.placeholder  = count === 1 ? 'Escribe tu nombre completo' : 'Nombre completo del invitado ' + (i+1);
+      inp.autocomplete = 'off';
+      fieldsWrap.appendChild(inp);
+    }
+  }
+
+  function selectRsvp(choice){
+    asistira = (choice === 'yes');
+    yesBtn.classList.toggle('rsvp-toggle-selected-yes', choice === 'yes');
+    noBtn.classList.toggle('rsvp-toggle-selected-no', choice === 'no');
+    if(choice === 'yes'){
+      renderFields(pases);
+      fieldsWrap.style.display = '';
+    }else{
+      fieldsWrap.innerHTML = '';
+      fieldsWrap.style.display = 'none';
+    }
+  }
+
+  toggleWrap.style.display = '';
+
+  /* — GET: precargar nombres asignados / respuesta previa — */
+  if(paraName){
+    fetch(API + '?nombre=' + encodeURIComponent(paraName) + '&url_boda=' + encodeURIComponent(RSVP_URL))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(!d.ok || !d.invitado) return;
+        var inv = d.invitado;
+        var asignados = Array.isArray(inv.nombres_asignados) ? inv.nombres_asignados.filter(function(x){ return x && x.trim(); }) : [];
+        if(asignados.length > 0){
+          nombresAsignados = asignados;
+          toggleWrap.style.display = 'none';
+          fieldsWrap.style.display = 'none';
+          pasesInfo.style.display = 'none';
+          asigEl.style.display = 'flex';
+          if(inv.estado === 'confirmado' || inv.estado === 'declino'){
+            var confLower = (inv.nombres_confirmados || []).map(function(s){ return String(s).toLowerCase().trim(); });
+            nombresAsignados.forEach(function(nm, idx){
+              asignadosChoices[idx] = (inv.estado === 'declino') ? 'no' : (confLower.indexOf(nm.toLowerCase().trim()) >= 0 ? 'yes' : 'no');
+            });
+            btnText.textContent = 'Actualizar respuesta';
+          }
+          renderAsignados();
+          return;
+        }
+        if(inv.estado === 'confirmado'){
+          selectRsvp('yes');
+          btnText.textContent = 'Actualizar respuesta';
+          var prev = inv.nombres_confirmados || [];
+          if(prev.length > 0){
+            var inputs = fieldsWrap.querySelectorAll('input');
+            prev.forEach(function(n, i){ if(inputs[i]) inputs[i].value = n; });
+          }
+        }else if(inv.estado === 'declino'){
+          selectRsvp('no');
+          btnText.textContent = 'Actualizar respuesta';
+        }
+      })
+      .catch(function(err){ console.error('RSVP precarga:', err); });
   }
 
   if(frozen){
+    yesBtn.disabled = true;
+    noBtn.disabled = true;
     confirmBtn.disabled = true;
     btnText.textContent = 'Fecha límite alcanzada';
     if(feedbackEl) feedbackEl.textContent = 'La fecha para confirmar asistencia ha pasado.';
     return;
   }
 
-  toggleWrap.style.display = '';
-
-  yesBtn.addEventListener('click',function(){
-    asistira = true;
-    yesBtn.classList.add('rsvp-toggle-selected-yes');
-    noBtn.classList.remove('rsvp-toggle-selected-no');
-    fieldsWrap.style.display = '';
-  });
-  noBtn.addEventListener('click',function(){
-    asistira = false;
-    noBtn.classList.add('rsvp-toggle-selected-no');
-    yesBtn.classList.remove('rsvp-toggle-selected-yes');
-    fieldsWrap.style.display = 'none';
-  });
+  yesBtn.addEventListener('click', function(){ selectRsvp('yes'); });
+  noBtn.addEventListener('click',  function(){ selectRsvp('no'); });
 
   confirmBtn.addEventListener('click', function(){
-    if(asistira === null){ feedbackEl.textContent = 'Por favor selecciona si asistirás.'; feedbackEl.style.color='var(--accent-deep)'; return; }
-    var nombre = (nombreInput.value||'').trim();
-    if(!nombre){ feedbackEl.textContent = 'Por favor escribe tu nombre.'; feedbackEl.style.color='var(--accent-deep)'; return; }
-    var num = asistira ? parseInt(numInput.value,10)||1 : 0;
+    var modoAsignados = nombresAsignados.length > 0;
+    var nombres = [];
+    var estadoFinal;
+
+    if(modoAsignados){
+      var faltan = nombresAsignados.filter(function(_, i){ return !asignadosChoices[i]; });
+      if(faltan.length > 0){
+        feedbackEl.style.color = 'var(--accent-deep)';
+        feedbackEl.textContent = 'Por favor responde por cada invitado ('+faltan.length+' pendiente'+(faltan.length===1?'':'s')+').';
+        return;
+      }
+      nombres = nombresAsignados.filter(function(_, i){ return asignadosChoices[i] === 'yes'; });
+      estadoFinal = nombres.length > 0 ? 'confirmado' : 'declino';
+    }else{
+      if(asistira === null){
+        feedbackEl.style.color = 'var(--accent-deep)';
+        feedbackEl.textContent = 'Por favor selecciona si asistirás.';
+        return;
+      }
+      if(asistira){
+        nombres = Array.prototype.slice.call(fieldsWrap.querySelectorAll('input'))
+          .map(function(i){ return i.value.trim(); })
+          .filter(function(n){ return n.length > 0; });
+      }
+      estadoFinal = asistira ? 'confirmado' : 'declino';
+    }
+
+    var nombre = paraName || (nombres[0] || '');
+    if(!nombre){
+      feedbackEl.style.color = 'var(--accent-deep)';
+      feedbackEl.textContent = 'Por favor escribe tu nombre.';
+      return;
+    }
 
     confirmBtn.disabled = true;
     btnText.textContent = 'Enviando...';
@@ -1763,22 +1890,27 @@ const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     fetch(API, {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ slug:SLUG, nombre:nombre, pases:pases, asistentes:num, asiste:asistira })
+      body:JSON.stringify({
+        nombre:   nombre,
+        url_boda: RSVP_URL,
+        estado:   estadoFinal,
+        pases_confirmados:   estadoFinal === 'confirmado' ? nombres.length : 0,
+        nombres_confirmados: estadoFinal === 'confirmado' ? nombres : []
+      })
     })
-    .then(function(r){ return r.json(); })
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
     .then(function(data){
-      if(data.error){ throw new Error(data.error); }
-      feedbackEl.style.color = '#4a7848';
-      feedbackEl.textContent = asistira
+      if(data && data.error){ throw new Error(data.error); }
+      confirmBtn.disabled = false;
+      btnText.textContent = 'Actualizar respuesta';
+      feedbackEl.style.color = estadoFinal === 'confirmado' ? '#4a7848' : 'var(--accent-deep)';
+      feedbackEl.textContent = estadoFinal === 'confirmado'
         ? '¡Confirmado! Nos vemos el 19 de diciembre.'
         : 'Lamentamos que no puedas asistir. ¡Gracias por avisarnos!';
-      btnText.textContent = 'Confirmado';
-      toggleWrap.style.display = 'none';
-      fieldsWrap.style.display = 'none';
     })
-    .catch(function(err){
+    .catch(function(){
       feedbackEl.style.color = 'var(--accent-deep)';
-      feedbackEl.textContent = 'Error al enviar. Intenta de nuevo.';
+      feedbackEl.textContent = 'No pudimos guardar tu respuesta. Revisa tu conexión e intenta de nuevo.';
       confirmBtn.disabled = false;
       btnText.textContent = 'Confirmar asistencia';
     });
