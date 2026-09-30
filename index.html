@@ -1807,12 +1807,25 @@ const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   toggleWrap.style.display = '';
 
+  function bloqueaSinInvitacion(msg){
+    yesBtn.disabled = true; noBtn.disabled = true; confirmBtn.disabled = true;
+    fieldsWrap.innerHTML = ''; fieldsWrap.style.display = 'none';
+    feedbackEl.style.color = 'var(--accent-deep)';
+    feedbackEl.textContent = msg;
+  }
+
   /* — GET: precargar nombres asignados / respuesta previa — */
+  if(!paraName){
+    /* Sin link personalizado no hay invitación que actualizar */
+    bloqueaSinInvitacion('Usa el enlace personalizado que te enviaron para confirmar tu asistencia.');
+  }
   if(paraName){
     fetch(API + '?nombre=' + encodeURIComponent(paraName) + '&url_boda=' + encodeURIComponent(RSVP_URL))
       .then(function(r){ return r.json(); })
       .then(function(d){
-        if(!d.ok || !d.invitado) return;
+        /* Si el panel no la tiene, no se deja confirmar: el envío crearía una
+           invitación nueva con otro nombre y los contadores dejarían de cuadrar. */
+        if(!d.ok || !d.invitado){ bloqueaSinInvitacion('No encontramos tu invitación. Pide a los novios que te envíen tu enlace de nuevo.'); return; }
         var inv = d.invitado;
         var asignados = Array.isArray(inv.nombres_asignados) ? inv.nombres_asignados.filter(function(x){ return x && x.trim(); }) : [];
         if(asignados.length > 0){
@@ -1860,6 +1873,7 @@ const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   noBtn.addEventListener('click',  function(){ selectRsvp('no'); });
 
   confirmBtn.addEventListener('click', function(){
+    if(confirmBtn.disabled || !paraName) return;
     var modoAsignados = nombresAsignados.length > 0;
     var nombres = [];
     var estadoFinal;
