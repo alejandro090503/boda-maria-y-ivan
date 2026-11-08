@@ -1654,7 +1654,7 @@ footer{background:linear-gradient(160deg,#e7c9ff 0%,#bdd3ff 35%,#ccebff 65%,#ffd
           <h2 class="rsvp-title">Tu presencia <em>significa</em> todo</h2>
           <p id="rsvp-greeting" class="rsvp-text"></p>
           <p class="rsvp-text rsvp-fade">Dios juntó nuestras manos y nos señaló el camino; nosotros uniremos nuestras vidas para recorrerlas con amor, fe y su bendición.</p>
-          <p class="rsvp-text">Te pedimos confirmar tu asistencia a más tardar el <strong>31 de Octubre de 2026</strong>. Si para esa fecha no recibimos tu confirmación, entenderemos con cariño que no podrás acompañarnos.</p>
+          <p class="rsvp-text">Te pedimos confirmar tu asistencia a más tardar el <strong>30 de Noviembre de 2026</strong>. Si para esa fecha no recibimos tu confirmación, entenderemos con cariño que no podrás acompañarnos.</p>
 
           <div class="rsvp-divider">
             <svg class="rsvp-divider-heart" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/></svg>
@@ -1691,7 +1691,7 @@ footer{background:linear-gradient(160deg,#e7c9ff 0%,#bdd3ff 35%,#ccebff 65%,#ffd
 
           <div class="rsvp-deadline">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5z"/></svg>
-            Fecha límite · 31 de Octubre de 2026
+            Fecha límite · 30 de Noviembre de 2026
           </div>
         </div>
       </div>
@@ -1737,7 +1737,7 @@ const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 (function(){
   var API      = 'https://panel-invitados.vercel.app/api/confirmar';
   var RSVP_URL = 'https://boda-maria-y-ivan.vercel.app';
-  var DEADLINE = new Date(2026, 9, 31, 23, 59, 59, 999);
+  var DEADLINE = new Date(2026, 10, 30, 23, 59, 59, 999);
   var frozen   = Date.now() > DEADLINE.getTime();
 
   var confirmBtn = document.getElementById('rsvp-confirm-btn');
